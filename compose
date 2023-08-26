@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+# === Helper Functions
+
+function getComposeCmd {
+  echo "docker compose -f docker/docker-compose.yaml --env-file=docker/env/postgres.env"
+}
+
+function scaleTo {
+  echo "Current function: ${FUNCNAME[0]}"
+  local compose=$(getComposeCmd)
+  local scale=${1:-1}
+  eval "INSTANCE_NUM=$scale $compose --profile replicated up -d --scale n8n-webhook=$scale --scale n8n-worker=$scale --no-recreate"
+}
+
+
+# === Actions
+
+function up {
+  echo "Current function: ${FUNCNAME[0]}"
+  local compose=$(getComposeCmd)
+  eval "$compose up -d"
+}
+
+function down {
+  echo "Current function: ${FUNCNAME[0]}"
+  local compose=$(getComposeCmd)
+  eval "$compose --profile replicated down"
+  eval "$compose down"
+}
+
+function getCurrentScale {
+  echo $(docker ps --filter "name=docker-n8n-worker-*" --format '{{.Names}}' | sort -r | head -n 1 | rev | cut -d'-' -f1 | rev)
+}
+
+function scale {
+  echo "Current function: ${FUNCNAME[0]}"
+  local scale=${1:-1}
+  local compose=$(getComposeCmd)
+  local currentScale=$(getCurrentScale)
+  currentScale=${currentScale:-0}
+  echo "Current scale: $currentScale"
+  if [ "$currentScale" -lt "$scale" ]; then
+    echo "Upscale to $scale"
+    for ((i = currentScale + 1; i <= scale; i++)); do
+      scaleTo $i
+    done
+  else
+    echo "Downscale to $scale"
+    scaleTo $scale
+  fi
+}
+
+function config {
+  local compose=$(getComposeCmd)
+  eval "$compose config"
+}
+
+function ps {
+  docker ps --filter "name=docker-*" --format '{{.Names}}' | sort
+}
+
+function echoInstanceFor {
+  docker exec $1 sh -c 'echo $INSTANCE_TYPE $INSTANCE_NUM'
+}
+
+function echoInstance {
+  list=$(docker ps --filter "name=docker-n8n-worker-*" --format '{{.Names}}' | sort)
+  while IFS= read -r line; do
+    num=$(echo $line | rev | cut -d'-' -f1 | rev)
+    instance="docker-n8n-worker-$num"
+    echo "$instance: $(echoInstanceFor $instance)"
+    instance="docker-n8n-webhook-$num"
+    echo "$instance: $(echoInstanceFor $instance)"
+  done <<< "$list"
+}
+
+# === Entry point
+
+function run {
+  local action=$1
+  $action ${@:2}
+}
+
+run ${@}
