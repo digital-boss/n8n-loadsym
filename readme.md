@@ -1,0 +1,1 @@
+source ./autocomplete.sh
