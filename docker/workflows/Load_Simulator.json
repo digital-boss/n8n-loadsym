@@ -1,0 +1,84 @@
+{
+  "name": "Load Simulator",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "start-task",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "2ad23e86-d093-4103-99b6-3a1cf948bd09",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ],
+      "webhookId": "8b0c35c3-9fe4-42f2-8698-b9da6710dd88"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.query.duration }}"
+      },
+      "id": "789d2101-989e-46b2-9d37-7c512e3a8d4b",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        680,
+        460
+      ],
+      "webhookId": "69d1205a-37ae-4757-bfaa-cd97a4fe8c8f"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  type: $env['INSTANCE_TYPE'],\n  num: $env['INSTANCE_NUM'] || '',\n}\n"
+      },
+      "id": "6aaddadf-ed67-4091-ae89-f94f5ebaa2b1",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        460
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "72a953dc-129d-4b0b-bd6c-3c3b5010d778",
+  "id": "lqOUaCF9kXxfkAcg",
+  "meta": {
+    "instanceId": "9e59de378eb8f81b6d1779ca0131c6e2b4bb9f93c539976ee54b1ddbd7999dde"
+  },
+  "tags": []
+}

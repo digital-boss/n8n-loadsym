@@ -1,9 +1,11 @@
 version: '3.8'
 
 volumes:
-  db_storage:
-  n8n_storage:
-  redis_storage:
+  postgres:
+  n8n:
+  redis:
+  rabbitmq_data:
+  rabbitmq_log:
 
 x-n8n-shared: &n8n-shared
   restart: always
@@ -14,11 +16,14 @@ x-n8n-shared: &n8n-shared
     - postgres
     - redis
   volumes:
-    - n8n_storage:/home/node/.n8n
+    - n8n:/home/node/.n8n
+    - ./workflows:/workflows
   depends_on:
     redis:
       condition: service_healthy
     postgres:
+      condition: service_healthy
+    rabbitmq:
       condition: service_healthy
 
 services:
@@ -27,7 +32,7 @@ services:
     restart: always
     env_file: env/postgres.env
     volumes:
-      - db_storage:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
@@ -39,12 +44,26 @@ services:
     image: redis:6-alpine
     restart: always
     volumes:
-      - redis_storage:/data
+      - redis:/data
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.12.4-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
   n8n-main:
     <<: *n8n-shared
@@ -72,3 +91,4 @@ services:
     depends_on:
       - n8n-main
     profiles: ["replicated"]
+

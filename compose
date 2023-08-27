@@ -75,6 +75,34 @@ function echoInstance {
   done <<< "$list"
 }
 
+function clean {
+  docker volume rm \
+    docker_n8n \
+    docker_postgres \
+    docker_rabbitmq_data \
+    docker_rabbitmq_log \
+    docker_redis
+}
+
+function create_owner {
+  login_response=$(curl -I -X GET http://localhost:5678/rest/login)
+  cookie_value=$(echo "$login_response" | grep -oP 'Set-Cookie: \K[^;]*')
+  curl -X POST http://localhost:5678/rest/owner/setup \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -H "Cookie: $cookie_value" \
+    -d '{
+      "email": "a@a.aa",
+      "firstName": "owner",
+      "lastName": "owner",
+      "password": "1234567A"
+    }'
+}
+
+function import_wf {
+  docker exec docker-n8n-main-1 n8n import:workflow --separate --input=/workflows
+}
+
 # === Entry point
 
 function run {
