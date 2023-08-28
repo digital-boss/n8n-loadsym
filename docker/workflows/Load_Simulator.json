@@ -12,43 +12,150 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        460,
-        460
+        -80,
+        320
       ],
       "webhookId": "8b0c35c3-9fe4-42f2-8698-b9da6710dd88"
     },
     {
       "parameters": {
-        "amount": "={{ $json.query.duration }}"
+        "amount": "={{ $json.query.duration }}",
+        "unit": "seconds"
       },
       "id": "789d2101-989e-46b2-9d37-7c512e3a8d4b",
       "name": "Wait",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1,
       "position": [
-        680,
-        460
+        600,
+        320
       ],
       "webhookId": "69d1205a-37ae-4757-bfaa-cd97a4fe8c8f"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "return {\n  type: $env['INSTANCE_TYPE'],\n  num: $env['INSTANCE_NUM'] || '',\n}\n"
+        "jsCode": "return {\n  json: {\n    type: $env['INSTANCE_TYPE'],\n    num: $env['INSTANCE_NUM'] || '',\n  }\n}\n"
       },
       "id": "6aaddadf-ed67-4091-ae89-f94f5ebaa2b1",
-      "name": "Code",
+      "name": "Instance",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        900,
-        460
+        120,
+        320
       ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    instance: $('Instance').item.json,\n    task: $('Webhook').item.json.query.id,\n    duration: $('Webhook').item.json.query.duration,\n  }\n}\n"
+      },
+      "id": "968b549c-c1cf-4418-a13b-84b8cd3aeff1",
+      "name": "Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1060,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://openobserve:5080/api/org1/stream1/_json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"event\": \"started\",\n  \"instance\": {{ JSON.stringify($('Instance').item.json) }},\n  \"task\": {{ $('Webhook').item.json.query.id }},\n  \"duration\": {{ $('Webhook').item.json.query.duration }}\n}]",
+        "options": {}
+      },
+      "id": "5bd12785-b577-4988-9360-dd58d19facf6",
+      "name": "OpenObserve Start",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        360,
+        320
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "vT2JofU7UTOPGwqo",
+          "name": "OpenObserve"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://openobserve:5080/api/org1/stream1/_json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"event\": \"finished\",\n  \"instance\": {{ JSON.stringify($('Instance').item.json) }},\n  \"task\": {{ $('Webhook').item.json.query.id }},\n  \"duration\": {{ $('Webhook').item.json.query.duration }}\n}]",
+        "options": {}
+      },
+      "id": "08f2f41c-b1fe-4a28-b1ea-cb79eebeb40a",
+      "name": "OpenObserve Finished",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        840,
+        320
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "vT2JofU7UTOPGwqo",
+          "name": "OpenObserve"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
     "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instance": {
+      "main": [
+        [
+          {
+            "node": "OpenObserve Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenObserve Start": {
       "main": [
         [
           {
@@ -63,7 +170,18 @@
       "main": [
         [
           {
-            "node": "Code",
+            "node": "OpenObserve Finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenObserve Finished": {
+      "main": [
+        [
+          {
+            "node": "Result",
             "type": "main",
             "index": 0
           }
@@ -71,14 +189,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "72a953dc-129d-4b0b-bd6c-3c3b5010d778",
+  "versionId": "c26bc64e-12ba-43db-b554-7bffb1c04717",
   "id": "lqOUaCF9kXxfkAcg",
   "meta": {
-    "instanceId": "9e59de378eb8f81b6d1779ca0131c6e2b4bb9f93c539976ee54b1ddbd7999dde"
+    "instanceId": "50f61b0e4bf7673546be4826d46091fb9d94ac0979ff3574a294cf1341db100d"
   },
   "tags": []
 }

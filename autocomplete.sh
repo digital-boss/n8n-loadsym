@@ -21,4 +21,4 @@ completion() {
     COMPREPLY=($(compgen -W "$actions" "${COMP_WORDS[1]}"))
 }
 
-complete -F completion manage
+complete -F completion ./manage

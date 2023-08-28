@@ -4,12 +4,11 @@ volumes:
   postgres:
   n8n:
   redis:
-  rabbitmq_data:
-  rabbitmq_log:
+  openobserve:
 
 x-n8n-shared: &n8n-shared
   restart: always
-  image: docker.n8n.io/n8nio/n8n
+  image: n8nio/n8n:1.4.0
   env_file:
     - env/n8n-common.env
   links:
@@ -18,12 +17,11 @@ x-n8n-shared: &n8n-shared
   volumes:
     - n8n:/home/node/.n8n
     - ./workflows:/workflows
+    - ./creds:/creds
   depends_on:
     redis:
       condition: service_healthy
     postgres:
-      condition: service_healthy
-    rabbitmq:
       condition: service_healthy
 
 services:
@@ -51,19 +49,13 @@ services:
       timeout: 5s
       retries: 10
 
-  rabbitmq:
-    image: rabbitmq:3.12.4-management-alpine
-    ports:
-      - 5672:5672
-      - 15672:15672
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    env_file: env/openobserve.env
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - rabbitmq_log:/var/log/rabbitmq
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 5s
-      timeout: 5s
-      retries: 3
+      - openobserve:/data
+    ports:
+     - 5080:5080
 
   n8n-main:
     <<: *n8n-shared

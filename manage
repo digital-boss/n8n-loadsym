@@ -65,8 +65,7 @@ function clean {
   docker volume rm \
     docker_n8n \
     docker_postgres \
-    docker_rabbitmq_data \
-    docker_rabbitmq_log \
+    docker_openobserve \
     docker_redis
 }
 
@@ -87,6 +86,7 @@ function create_owner {
 }
 
 function import_wf {
+  docker exec docker-n8n-main-1 n8n import:credentials --input=/creds/creds.json
   docker exec docker-n8n-main-1 n8n import:workflow --separate --input=/workflows
 }
 
@@ -100,6 +100,7 @@ function wait_n8n {
       echo "waiting for n8n"
       sleep 1
     else
+      sleep 1
       return
     fi
   done
