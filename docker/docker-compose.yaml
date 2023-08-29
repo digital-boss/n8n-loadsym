@@ -10,14 +10,14 @@ x-n8n-shared: &n8n-shared
   restart: always
   image: n8nio/n8n:1.4.0
   env_file:
-    - env/n8n-common.env
+    - provision/n8n/n8n-common.env
   links:
     - postgres
     - redis
   volumes:
     - n8n:/home/node/.n8n
-    - ./workflows:/workflows
-    - ./creds:/creds
+    - ./provision/n8n/creds:/data/creds
+    - ./provision/n8n/workflows:/data/workflows
   depends_on:
     redis:
       condition: service_healthy
@@ -28,10 +28,10 @@ services:
   postgres:
     image: postgres:11
     restart: always
-    env_file: env/postgres.env
+    env_file: provision/postgres/postgres.env
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+      - ./provision/postgres/init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
       interval: 5s
@@ -51,11 +51,19 @@ services:
 
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest
-    env_file: env/openobserve.env
+    env_file: provision/openobserve.env
     volumes:
       - openobserve:/data
     ports:
      - 5080:5080
+
+  balancer:
+    image: nginx:1.25.2
+    env_file: provision/balancer/nginx.env
+    volumes:
+      - ./provision/balancer/nginx.conf:/etc/nginx/templates/default.conf.template
+    ports:
+      - "5679:80"
 
   n8n-main:
     <<: *n8n-shared
@@ -69,7 +77,9 @@ services:
     environment:
       - INSTANCE_TYPE=worker
       - INSTANCE_NUM
-    command: worker
+    # Default worker concurrency is 10 
+    # https://docs.n8n.io/hosting/scaling/queue-mode/#configure-worker-concurrency
+    command: worker --concurrency=1 
     depends_on:
       - n8n-main
     profiles: ["replicated"]
@@ -82,5 +92,7 @@ services:
     command: webhook
     depends_on:
       - n8n-main
+    ports:
+      - 5677:5678
     profiles: ["replicated"]
 

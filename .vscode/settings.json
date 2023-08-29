@@ -1,0 +1,9 @@
+{
+  "terminal.integrated.profiles.linux": {
+    "Project Shell": {
+      "path": "/bin/bash",
+      "args": ["--rcfile", "./bashrc.sh"],
+    }
+  },
+  "terminal.integrated.defaultProfile.linux":"Project Shell"
+}

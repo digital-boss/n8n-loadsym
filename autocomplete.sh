@@ -1,8 +1,6 @@
-#!/usr/bin/env bash
-
 completion() {
-    # List of actions
-      local actions="
+  # List of actions
+  local actions="
         up
         down
         getCurrentScale
@@ -18,7 +16,7 @@ completion() {
         redeploy
         "
 
-    COMPREPLY=($(compgen -W "$actions" "${COMP_WORDS[1]}"))
+  COMPREPLY=($(compgen -W "$actions" "${COMP_WORDS[1]}"))
 }
 
-complete -F completion ./manage
+complete -F completion ./manage.sh

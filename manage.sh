@@ -5,20 +5,20 @@
 function scaleTo {
   echo "Current function: ${FUNCNAME[0]}"
   local scale=${1:-1}
-  eval "INSTANCE_NUM=$scale ./compose --profile replicated up -d --scale n8n-webhook=$scale --scale n8n-worker=$scale --no-recreate"
+  eval "INSTANCE_NUM=$scale ./compose.sh --profile replicated up -d --scale n8n-webhook=$scale --scale n8n-worker=$scale --no-recreate"
 }
 
 # === Actions
 
 function up {
   echo "Current function: ${FUNCNAME[0]}"
-  eval "./compose up -d"
+  eval "./compose.sh up -d"
 }
 
 function down {
   echo "Current function: ${FUNCNAME[0]}"
-  eval "./compose --profile replicated down"
-  eval "./compose down"
+  eval "./compose.sh --profile replicated down"
+  eval "./compose.sh down"
 }
 
 function getCurrentScale {
@@ -86,8 +86,8 @@ function create_owner {
 }
 
 function import_wf {
-  docker exec docker-n8n-main-1 n8n import:credentials --input=/creds/creds.json
-  docker exec docker-n8n-main-1 n8n import:workflow --separate --input=/workflows
+  docker exec docker-n8n-main-1 n8n import:credentials --input=/data/creds/creds.json
+  docker exec docker-n8n-main-1 n8n import:workflow --separate --input=/data/workflows
 }
 
 function wait_n8n {
@@ -109,16 +109,24 @@ function wait_n8n {
 # === Combined tasks
 
 function deploy {
+  local "${@}"
+  local scale=${scale:-0}
   up
-  import_wf
   wait_n8n
+  import_wf
   create_owner
+  if [ -n $scale ]; then
+    scale $scale
+  fi
+  ps
+  echoInstance
 }
 
 function redeploy {
+  scale 0
   down
   clean
-  deploy
+  deploy ${@}
 }
 
 # === Entry point

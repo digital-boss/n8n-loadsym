@@ -1,8 +1,10 @@
-source ./autocomplete.sh
+source ./autocomplete.sh OR open shell in VSCode.
 
-./manage redeploy
-./manage scale 3
-./send-requests
+- ./manage.sh redeploy scale=3
+- Activate "Load Simulator" workflow from UI.
+- ./send-requests
+
+
 
 # Openobserve
 

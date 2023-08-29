@@ -90,7 +90,7 @@
       ],
       "credentials": {
         "httpBasicAuth": {
-          "id": "vT2JofU7UTOPGwqo",
+          "id": "UznCdjhXDj3uamAy",
           "name": "OpenObserve"
         }
       }
@@ -125,7 +125,7 @@
       ],
       "credentials": {
         "httpBasicAuth": {
-          "id": "vT2JofU7UTOPGwqo",
+          "id": "UznCdjhXDj3uamAy",
           "name": "OpenObserve"
         }
       }
@@ -195,10 +195,10 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "c26bc64e-12ba-43db-b554-7bffb1c04717",
+  "versionId": "7addffd1-6a14-41e1-b7c3-2b69f52c9dbd",
   "id": "lqOUaCF9kXxfkAcg",
   "meta": {
-    "instanceId": "50f61b0e4bf7673546be4826d46091fb9d94ac0979ff3574a294cf1341db100d"
+    "instanceId": "7a5fd2945dc80f65f168c16bc9b8b6d3de2fcfc6d279202dbf3440529516ffc7"
   },
   "tags": []
 }
