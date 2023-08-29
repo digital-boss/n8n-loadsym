@@ -19,7 +19,7 @@
     },
     {
       "parameters": {
-        "amount": "={{ $json.query.duration }}",
+        "amount": "={{ $('Webhook').item.json[\"query\"][\"duration\"] }}",
         "unit": "seconds"
       },
       "id": "789d2101-989e-46b2-9d37-7c512e3a8d4b",
@@ -35,21 +35,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "return {\n  json: {\n    type: $env['INSTANCE_TYPE'],\n    num: $env['INSTANCE_NUM'] || '',\n  }\n}\n"
-      },
-      "id": "6aaddadf-ed67-4091-ae89-f94f5ebaa2b1",
-      "name": "Instance",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        120,
-        320
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "return {\n  json: {\n    instance: $('Instance').item.json,\n    task: $('Webhook').item.json.query.id,\n    duration: $('Webhook').item.json.query.duration,\n  }\n}\n"
+        "jsCode": "return {\n  json: {\n    event: \"result\",\n    info: $('TaskInfo').item.json\n  }\n}\n"
       },
       "id": "968b549c-c1cf-4418-a13b-84b8cd3aeff1",
       "name": "Result",
@@ -77,7 +63,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "=[{\n  \"event\": \"started\",\n  \"instance\": {{ JSON.stringify($('Instance').item.json) }},\n  \"task\": {{ $('Webhook').item.json.query.id }},\n  \"duration\": {{ $('Webhook').item.json.query.duration }}\n}]",
+        "jsonBody": "=[{\n  \"event\": \"started\",\n  \"info\": {{ JSON.stringify($('TaskInfo').item.json) }}\n}]",
         "options": {}
       },
       "id": "5bd12785-b577-4988-9360-dd58d19facf6",
@@ -112,7 +98,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "=[{\n  \"event\": \"finished\",\n  \"instance\": {{ JSON.stringify($('Instance').item.json) }},\n  \"task\": {{ $('Webhook').item.json.query.id }},\n  \"duration\": {{ $('Webhook').item.json.query.duration }}\n}]",
+        "jsonBody": "=[{\n  \"event\": \"finished\",\n  \"info\": {{ JSON.stringify($('TaskInfo').item.json) }}\n}]",
         "options": {}
       },
       "id": "08f2f41c-b1fe-4a28-b1ea-cb79eebeb40a",
@@ -129,6 +115,20 @@
           "name": "OpenObserve"
         }
       }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    worker: {\n      type: $env['INSTANCE_TYPE'],\n      num: $env['INSTANCE_NUM'] || 'x',\n    },\n    task: {\n      id: $('Webhook').item.json.query.id,\n      duration: $('Webhook').item.json.query.duration,\n    },\n    webhook: $('Webhook').item.json.headers.host\n  }\n}\n"
+      },
+      "id": "6aaddadf-ed67-4091-ae89-f94f5ebaa2b1",
+      "name": "TaskInfo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        320
+      ]
     }
   ],
   "pinData": {},
@@ -137,18 +137,7 @@
       "main": [
         [
           {
-            "node": "Instance",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Instance": {
-      "main": [
-        [
-          {
-            "node": "OpenObserve Start",
+            "node": "TaskInfo",
             "type": "main",
             "index": 0
           }
@@ -187,6 +176,17 @@
           }
         ]
       ]
+    },
+    "TaskInfo": {
+      "main": [
+        [
+          {
+            "node": "OpenObserve Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -195,10 +195,10 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "7addffd1-6a14-41e1-b7c3-2b69f52c9dbd",
+  "versionId": "f6eaaa15-f372-4346-a72a-a4c5be5c1445",
   "id": "lqOUaCF9kXxfkAcg",
   "meta": {
-    "instanceId": "7a5fd2945dc80f65f168c16bc9b8b6d3de2fcfc6d279202dbf3440529516ffc7"
+    "instanceId": "a9e7bf92ccefb507189da642a8b9dce1ad0744b0d2d006d589b06e12b8aed586"
   },
   "tags": []
 }
