@@ -1,3 +1,12 @@
+
+Configuration contains n8n in queue mode with scalable amount of workers and webhooks. 
+Each webhooks executed with sidecar proxy container to track which request handled by which webhook instance.
+
+- `./queue.sh` By timer read the size of waiting and active jobs. 
+- `./send-requests` Sends job requests to "Load Simulator" workflow in infinite loop. Press Enter to stop. Each request contains job id and delay (in seconds).
+
+Openobserve used for analytics.
+
 # Usage
 
 Prepare:
