@@ -19,16 +19,15 @@ const queue = new Queue('jobs', {
   },
 });
 
-console.log(queue.toKey('waiting'));
-
 const checkQueueSize = async () => {
   const waiting = await queue.client.llen(queue.toKey('wait'));
   const active = await queue.client.llen(queue.toKey('active'));
   const queueSize = await queue.getJobCounts();
+  process.stdout.cursorTo(0, 0); // Move cursor to the beginning of the console
+  process.stdout.clearScreenDown(); // Clear the screen from the cursor position downward
+  console.log('Press Enter (empty line) to exit')
   console.log('Queue size:', waiting, active, queueSize);
 };
 
 // Call checkQueueSize periodically
-setInterval(checkQueueSize, 1000);
-
-console.log('Press Enter (empty line) to exit')
+setInterval(checkQueueSize, 100);
