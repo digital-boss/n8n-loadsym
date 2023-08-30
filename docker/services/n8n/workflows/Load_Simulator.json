@@ -119,7 +119,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "return {\n  json: {\n    worker: {\n      type: $env['INSTANCE_TYPE'],\n      num: $env['INSTANCE_NUM'] || 'x',\n    },\n    task: {\n      id: $('Webhook').item.json.query.id,\n      duration: $('Webhook').item.json.query.duration,\n    },\n    webhook: $('Webhook').item.json.headers.host\n  }\n}\n"
+        "jsCode": "return {\n  json: {\n    worker: {\n      type: $env['INSTANCE_TYPE'],\n      num: $env['INSTANCE_NUM'] || 'x',\n    },\n    task: {\n      id: $('Webhook').item.json.query.id,\n      duration: $('Webhook').item.json.query.duration,\n    },\n    webhook: {\n      host: $('Webhook').item.json.headers.host,\n      num: $('Webhook').item.json.headers['x-instance-num']\n    }\n  }\n}\n"
       },
       "id": "6aaddadf-ed67-4091-ae89-f94f5ebaa2b1",
       "name": "TaskInfo",
@@ -195,10 +195,10 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "f6eaaa15-f372-4346-a72a-a4c5be5c1445",
+  "versionId": "bfa61d08-7fe0-418a-8fe5-de8ee6895dda",
   "id": "lqOUaCF9kXxfkAcg",
   "meta": {
-    "instanceId": "a9e7bf92ccefb507189da642a8b9dce1ad0744b0d2d006d589b06e12b8aed586"
+    "instanceId": "050af63a988696319c99c518b03a57d6ad2cd970f9dd6d8c864d65602c7037c5"
   },
   "tags": []
 }

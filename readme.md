@@ -1,11 +1,24 @@
-## Quick Start
+# Usage
 
-`source ./autocomplete.sh` OR open shell in VSCode.
+Prepare:
+- `source ./autocomplete.sh` OR open shell in VSCode.
 
-- `./manage.sh redeploy scale=3`
-- `./compose up -d balancer`
-- Activate "Load Simulator" workflow from UI.
-- `./send-requests`
+Deploy:
+- `./manage.sh redeploy scale=4`
+- `./compose.sh up -d balancer`
+- Activate "Load Simulator" workflow from [UI](http://localhost:5678).
+
+Start & watch:
+- Open executions in Browser: http://localhost:5678/executions
+- terminal 1: `./queue.sh`
+- terminal 2: `./send-requests`
+
+Stop:
+- stop send requests by pressing Enter.
+- stop watch queue by pressing Enter.
+
+Analyze:
+- Checkout logs: http://localhost:5080/web/logs?org_identifier=org1
 
 # Openobserve
 
