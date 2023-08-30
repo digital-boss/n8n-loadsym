@@ -5,7 +5,7 @@
 function scaleTo {
   echo "Current function: ${FUNCNAME[0]}"
   local scale=${1:-1}
-  eval "INSTANCE_NUM=$scale ./compose.sh --profile replicated up -d --scale n8n-webhook=$scale --scale n8n-worker=$scale --no-recreate"
+  eval "INSTANCE_NUM=$scale ./compose.sh --profile replicated up -d --scale n8n-webhook=$scale --scale n8n-webhook-proxy=$scale --scale n8n-worker=$scale --no-recreate"
 }
 
 # === Actions
@@ -51,13 +51,9 @@ function echoInstanceFor {
 }
 
 function echoInstance {
-  list=$(docker ps --filter "name=docker-n8n-worker-*" --format '{{.Names}}' | sort)
+  list=$(docker ps --filter "name=docker-n8n-*" --format '{{.Names}}' | sort)
   while IFS= read -r line; do
-    num=$(echo $line | rev | cut -d'-' -f1 | rev)
-    instance="docker-n8n-worker-$num"
-    echo "$instance: $(echoInstanceFor $instance)"
-    instance="docker-n8n-webhook-$num"
-    echo "$instance: $(echoInstanceFor $instance)"
+    echo "$line: $(echoInstanceFor $line)"
   done <<<"$list"
 }
 

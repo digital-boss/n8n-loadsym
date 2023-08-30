@@ -1,0 +1,204 @@
+{
+  "name": "Load Simulator",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "start-task",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "2ad23e86-d093-4103-99b6-3a1cf948bd09",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        320
+      ],
+      "webhookId": "8b0c35c3-9fe4-42f2-8698-b9da6710dd88"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Webhook').item.json[\"query\"][\"duration\"] }}",
+        "unit": "seconds"
+      },
+      "id": "789d2101-989e-46b2-9d37-7c512e3a8d4b",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        600,
+        320
+      ],
+      "webhookId": "69d1205a-37ae-4757-bfaa-cd97a4fe8c8f"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    event: \"result\",\n    info: $('TaskInfo').item.json\n  }\n}\n"
+      },
+      "id": "968b549c-c1cf-4418-a13b-84b8cd3aeff1",
+      "name": "Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1060,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://openobserve:5080/api/org1/stream1/_json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"event\": \"started\",\n  \"info\": {{ JSON.stringify($('TaskInfo').item.json) }}\n}]",
+        "options": {}
+      },
+      "id": "5bd12785-b577-4988-9360-dd58d19facf6",
+      "name": "OpenObserve Start",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        360,
+        320
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "UznCdjhXDj3uamAy",
+          "name": "OpenObserve"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://openobserve:5080/api/org1/stream1/_json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"event\": \"finished\",\n  \"info\": {{ JSON.stringify($('TaskInfo').item.json) }}\n}]",
+        "options": {}
+      },
+      "id": "08f2f41c-b1fe-4a28-b1ea-cb79eebeb40a",
+      "name": "OpenObserve Finished",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        840,
+        320
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "UznCdjhXDj3uamAy",
+          "name": "OpenObserve"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    worker: {\n      type: $env['INSTANCE_TYPE'],\n      num: $env['INSTANCE_NUM'] || 'x',\n    },\n    task: {\n      id: $('Webhook').item.json.query.id,\n      duration: $('Webhook').item.json.query.duration,\n    },\n    webhook: {\n      host: $('Webhook').item.json.headers.host,\n      num: $('Webhook').item.json.headers['x-instance-num']\n    }\n  }\n}\n"
+      },
+      "id": "6aaddadf-ed67-4091-ae89-f94f5ebaa2b1",
+      "name": "TaskInfo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        320
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "TaskInfo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenObserve Start": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "OpenObserve Finished",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenObserve Finished": {
+      "main": [
+        [
+          {
+            "node": "Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TaskInfo": {
+      "main": [
+        [
+          {
+            "node": "OpenObserve Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "bfa61d08-7fe0-418a-8fe5-de8ee6895dda",
+  "id": "lqOUaCF9kXxfkAcg",
+  "meta": {
+    "instanceId": "050af63a988696319c99c518b03a57d6ad2cd970f9dd6d8c864d65602c7037c5"
+  },
+  "tags": []
+}

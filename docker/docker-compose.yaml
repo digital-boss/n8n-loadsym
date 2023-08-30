@@ -96,3 +96,15 @@ services:
       - n8n-main
     profiles: ["replicated"]
 
+  n8n-webhook-proxy:
+    image: nginx:1.25.2
+    volumes:
+      - ./services/webhook-proxy/nginx.conf:/etc/nginx/templates/default.conf.template
+    # entrypoint: echo "INSTANCE_NUM=$INSTANCE_NUM" && tail -f /dev/null
+    environment:
+      - INSTANCE_TYPE=webhook-proxy
+      - INSTANCE_NUM
+    profiles: ["replicated"]
+    depends_on:
+      - n8n-webhook
+
