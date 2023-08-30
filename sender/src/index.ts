@@ -19,7 +19,6 @@ async function send_log(data: string): Promise<void> {
     },
     body: '['+data+']',
   });
-  console.log(response);
 }
 
 async function start_task(id: number, duration: number): Promise<void> {

@@ -129,6 +129,14 @@ function redeploy {
   deploy ${@}
 }
 
+# redeploy service
+function rs {
+  local service=$1
+  ./compose.sh down $1
+  docker volume rm docker_$1
+  ./compose.sh up -d $1
+}
+
 # === Entry point
 
 function run {

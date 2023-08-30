@@ -14,6 +14,7 @@ completion() {
         wait_n8n
         deploy
         redeploy
+        rs
         "
 
   COMPREPLY=($(compgen -W "$actions" "${COMP_WORDS[1]}"))
