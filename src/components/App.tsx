@@ -2,20 +2,18 @@ import type { Component } from "solid-js";
 import { createSignal, createEffect } from "solid-js";
 import logo from "./logo.svg";
 import styles from "./App.module.css";
+import { Matrix, PanZoom } from "./PanZoom";
 
 const App: Component = () => {
-  var svg = document.getElementById('map-svg') as any;
-  var viewbox = svg.getAttributeNS(null, "viewBox").split(" ");
-  var centerX = parseFloat(viewbox[2]) / 2;
-  var centerY = parseFloat(viewbox[3]) / 2;
+  const viewBox = [0, 0, 260, 220];
+  const centerX = viewBox[2] / 2;
+  const centerY = viewBox[3] / 2;
 
-  const [matrix, setMatrix] = createSignal([1, 0, 0, 1, 0, 0]);
-
-  const transform = () => "matrix(" + matrix().join(" ") + ")";
+  const [matrix, setMatrix] = createSignal<Matrix>([1, 0, 0, 1, 0, 0]);
 
   const pan = (dx: number, dy: number) => {
     setMatrix(old => {
-      const m = [...old]
+      const m: Matrix = [...old]
       m[4] += dx;
       m[5] += dy;
       return m;
@@ -24,7 +22,7 @@ const App: Component = () => {
 
   const zoom = (scale: number) => {
     setMatrix(old => {
-      const m = [...old];
+      const m: Matrix = [...old];
       for (var i = 0; i < 6; i++) {
         m[i] *= scale;
       }
@@ -35,10 +33,12 @@ const App: Component = () => {
     });
   }
 
+
+
   return (
     <div>
-      <svg viewBox="0 0 250 150" id="map-svg">
-        <g id="matrix-group" transform={transform()}>
+      <svg viewBox={viewBox.join(' ')} id="map-svg">
+        <PanZoom matrix={matrix} setMatrix={setMatrix}>
           <path
             id="WA"
             class={styles.territory}
@@ -78,7 +78,7 @@ const App: Component = () => {
               d="m 222,165.7 0.1,2.8 0.4,1.4 1,1 0.4,-0.9 0.2,2.9 2.6,1.6 1,-2.2 0,-3.6 c 0,0 -0.3,-0.5 -0.6,-1.1 0.8,-0.3 1.2,0.1 1.2,0.1 l 0.1,-3.4 1.5,-2 2.4,0.3 0.5,-1 -2.7,-1.3 c 0,0 -0.7,-1.8 -1.8,-2.4 -1.6,1.1 -4,2 -5.2,3.9 -0.4,0.7 -0.5,2.3 -0.5,2.3 z"
             />
           </g>
-        </g>
+        </PanZoom>
 
         <circle cx="25" cy="25" r="21" fill="white" opacity="0.75" />
         <path
