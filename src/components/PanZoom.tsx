@@ -19,7 +19,7 @@ interface Store {
 }
 
 export const PanZoom: ParentComponent<PanZoomProps> = ({matrix, setMatrix, children, ...rest}) => {
-  
+
   const transform = () => "matrix(" + matrix().join(" ") + ")";
 
   const [state, setState] = createStore<Store>({})
@@ -56,7 +56,7 @@ export const PanZoom: ParentComponent<PanZoomProps> = ({matrix, setMatrix, child
       const scaleX = width / svg.viewBox.baseVal.width;
       const scaleY = height / svg.viewBox.baseVal.height;
     
-      console.log(`dx: ${dx}, dy: ${dy}, ${scaleX}, ${scaleY}`);
+      // console.log(`dx: ${dx}, dy: ${dy}, ${scaleX}, ${scaleY}`);
       pan(dx/scaleX, dy/scaleY);
     }
   }
