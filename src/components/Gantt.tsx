@@ -13,18 +13,18 @@ const getCumulativeSumArray = (arr: number[]) => {
 }
 
 export const Gantt: Component<GanttProps> = p => {
+  const slotsCount = p.groups
+    .map(([, group]) => group.reduce((acc, i) => Math.max(acc, i.slot), 0))
+    .map(i => i + 1);
+  
   const cummulativeMargins = getCumulativeSumArray(
-    [0, ...p.groups
-      .map(([, group]) => group.reduce((acc, i) => Math.max(acc, i.slot), 0))
-      .map(i => i + 1)
-      .slice(0, -1)
-    ]
+    [0, ...slotsCount.slice(0, -1)]
   ).map(i => i * taskHeight * 1.3);
 
   return <>
     <For each={p.groups}>{([worker, group], i) => 
       <g transform={`translate(0 ${cummulativeMargins[i()]})`}>
-        {worker}
+        <rect width="100%" height={slotsCount[i()] * taskHeight} fill="#e0e39f"></rect>
         <Worker items={group}></Worker>
       </g>
     }</For>

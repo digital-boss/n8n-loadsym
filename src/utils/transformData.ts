@@ -88,9 +88,9 @@ const createTaskToDraw = (task: Task, firstTime: number): TaskToDraw => {
 
   const draw: TaskToDraw = {
     task: task,
-    started: startedTime,
-    finished: finishedTime,
-    result: resultTime,
+    started: startedTime/2,
+    finished: finishedTime/2,
+    result: resultTime/2,
     slot: -1,
   }
 

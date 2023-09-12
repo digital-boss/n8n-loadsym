@@ -6,8 +6,9 @@ export const taskHeight = 200;
 
 export const Task: Component<TaskToDraw> = p => {
   const width = p.result - p.started;
+  const text = `${p.task.id}: ${p.task.webhook}=>${p.task.worker}`;
   return <g transform={`translate(${p.started} ${p.slot * taskHeight})`}>
     <rect width={width} height={taskHeight} fill="#ddb47a"></rect>
-    <text class={styles.text} y={taskHeight}>{p.task.id}</text>
+    <text class={styles.text} y={taskHeight}>{text}</text>
   </g>
 }
