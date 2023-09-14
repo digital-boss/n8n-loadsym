@@ -49,7 +49,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://openobserve:5080/api/org1/stream1/_json",
+        "url": "=http://openobserve:5080/api/org1/{{ $('Webhook').item.json.query.stream }}/_json",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendHeaders": true,
@@ -84,7 +84,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://openobserve:5080/api/org1/stream1/_json",
+        "url": "=http://openobserve:5080/api/org1/{{ $('Webhook').item.json.query.stream }}/_json",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendHeaders": true,
@@ -195,10 +195,10 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "bfa61d08-7fe0-418a-8fe5-de8ee6895dda",
+  "versionId": "97a380da-8d11-402d-acf5-4a0dfe62340c",
   "id": "lqOUaCF9kXxfkAcg",
   "meta": {
-    "instanceId": "050af63a988696319c99c518b03a57d6ad2cd970f9dd6d8c864d65602c7037c5"
+    "instanceId": "9bed99dda1063e5720963f695899aca061a68d5878a9534412bdec4ea14aa172"
   },
   "tags": []
 }
