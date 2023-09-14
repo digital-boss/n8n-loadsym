@@ -83,7 +83,7 @@ services:
       - INSTANCE_NUM
     # Default worker concurrency is 10 
     # https://docs.n8n.io/hosting/scaling/queue-mode/#configure-worker-concurrency
-    command: worker --concurrency=1 
+    command: worker --concurrency=5 
     depends_on:
       - n8n-main
     profiles: ["replicated"]
