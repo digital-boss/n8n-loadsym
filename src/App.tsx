@@ -14,6 +14,14 @@ import { convertData } from "./utils/transformData";
 import { Gantt } from "./components/Gantt";
 import { Label } from "./components/Label";
 
+interface Context {
+  stream: string;
+}
+
+const ctx: Context = {
+  stream: 'stream6'
+}
+
 const fetchData = async (): Promise<any> => {
   return fetch("http://localhost:5080/api/org1/_search?type=logs", {
     headers: {
@@ -23,7 +31,7 @@ const fetchData = async (): Promise<any> => {
     },
     body: JSON.stringify({
       query: {
-        sql: 'select * from "stream1" ',
+        sql: `select * from "${ctx.stream}"`,
         size: 3000,
       },
     }),
