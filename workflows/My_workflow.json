@@ -1,0 +1,54 @@
+[{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f3c6901f-0a9d-42d9-8e09-639706ae9b49",
+      "name": "When clicking \"Test workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "command": "pwd"
+      },
+      "id": "bea083b7-7db0-4a88-8607-c70905152ad5",
+      "name": "Execute Command",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        520
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \"Test workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e1000a92-cb12-43ba-80ea-3b9e62b2d8c4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "deb01dd5d84a02c1893389635696cb85c1ac44103a9e108fe9e2bec14f803578"
+  },
+  "id": "5ynZqloThnWTiipw",
+  "tags": []
+}]
