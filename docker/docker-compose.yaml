@@ -8,7 +8,7 @@ volumes:
 
 x-n8n-shared: &n8n-shared
   restart: always
-  image: n8nio/n8n:1.4.0
+  image: n8nio/n8n:1.36.1
   env_file:
     - services/n8n/n8n-common.env
   links:
